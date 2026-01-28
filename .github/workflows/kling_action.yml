@@ -1,0 +1,29 @@
+name: Kling Video Generator
+on:
+  workflow_dispatch: # This adds the "Run" button on GitHub
+    inputs:
+      prompt:
+        description: 'What should happen in the video?'
+        required: true
+        default: 'Character blinks and smiles, cinematic lighting'
+      image_name:
+        description: 'Name of the image file in your repo (e.g. caricature.png)'
+        required: true
+        default: 'caricature.png'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install pyjwt requests python-dotenv
+      - name: Run Kling Script
+        env:
+          KLING_ACCESS_KEY: ${{ secrets.KLING_ACCESS_KEY }}
+          KLING_SECRET_KEY: ${{ secrets.KLING_SECRET_KEY }}
+        run: python main.py "${{ github.event.inputs.image_name }}" "${{ github.event.inputs.prompt }}"
